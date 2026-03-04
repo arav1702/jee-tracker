@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Arav JEE Control Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    transition:0.3s;
+}
+.light{
+    background:white;
+    color:black;
+}
+.box{
+    background:#1e293b;
+    margin:20px auto;
+    padding:20px;
+    border-radius:15px;
+    width:95%;
+    max-width:450px;
+}
+.light .box{
+    background:#f1f1f1;
+}
+input,button{
+    padding:8px;
+    margin:5px;
+    border-radius:8px;
+    border:none;
+}
+button{
+    background:cyan;
+    font-weight:bold;
+    cursor:pointer;
+}
+h2{color:cyan;}
+canvas{background:white;border-radius:10px;}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 Arav JEE Control Panel 🔥</h1>
+<button onclick="toggleMode()">Toggle Dark/Light</button>
+
+<!-- Countdown -->
+<div class="box">
+<h2>Exam Countdown</h2>
+<input type="date" id="examDate">
+<button onclick="saveDate()">Save Date</button>
+<p id="countdown"></p>
+</div>
+
+<!-- Timer -->
+<div class="box">
+<h2>Practice Timer</h2>
+<p id="timer">00:00</p>
+<button onclick="start()">Start</button>
+<button onclick="stop()">Stop</button>
+<button onclick="reset()">Reset</button>
+</div>
+
+<!-- Marks -->
+<div class="box">
+<h2>Mock Test Entry</h2>
+<input type="number" id="physics" placeholder="Physics">
+<input type="number" id="chemistry" placeholder="Chemistry">
+<input type="number" id="maths" placeholder="Maths">
+<br>
+<button onclick="saveMarks()">Save Test</button>
+<p id="weakness"></p>
+</div>
+
+<!-- Graph -->
+<div class="box">
+<h2>Performance Graph</h2>
+<canvas id="myChart"></canvas>
+</div>
+
+<script>
+
+// ================= DARK MODE =================
+function toggleMode(){
+    document.body.classList.toggle("light");
+}
+
+// ================= COUNTDOWN =================
+function saveDate(){
+    let d=document.getElementById("examDate").value;
+    localStorage.setItem("examDate",d);
+}
+setInterval(function(){
+    let d=localStorage.getItem("examDate");
+    if(!d) return;
+    let diff=new Date(d)-new Date();
+    let days=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("countdown").innerHTML=days+" Days Left 🔥";
+},1000);
+
+// ================= TIMER =================
+let sec=0, interval;
+function start(){
+    interval=setInterval(function(){
+        sec++;
+        let m=Math.floor(sec/60);
+        let s=sec%60;
+        document.getElementById("timer").innerHTML=
+        (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    },1000);
+}
+function stop(){clearInterval(interval);}
+function reset(){clearInterval(interval);sec=0;document.getElementById("timer").innerHTML="00:00";}
+
+// ================= MARKS + GRAPH =================
+let physicsData=JSON.parse(localStorage.getItem("physics"))||[];
+let chemistryData=JSON.parse(localStorage.getItem("chemistry"))||[];
+let mathsData=JSON.parse(localStorage.getItem("maths"))||[];
+
+function saveMarks(){
+    let p=Number(document.getElementById("physics").value);
+    let c=Number(document.getElementById("chemistry").value);
+    let m=Number(document.getElementById("maths").value);
+
+    physicsData.push(p);
+    chemistryData.push(c);
+    mathsData.push(m);
+
+    localStorage.setItem("physics",JSON.stringify(physicsData));
+    localStorage.setItem("chemistry",JSON.stringify(chemistryData));
+    localStorage.setItem("maths",JSON.stringify(mathsData));
+
+    checkWeakness(p,c,m);
+    updateChart();
+}
+
+function checkWeakness(p,c,m){
+    let min=Math.min(p,c,m);
+    let subject="";
+    if(min==p) subject="Physics ⚠️";
+    if(min==c) subject="Chemistry ⚠️";
+    if(min==m) subject="Maths ⚠️";
+    document.getElementById("weakness").innerHTML="Weakest: "+subject;
+}
+
+let ctx=document.getElementById("myChart").getContext("2d");
+let myChart=new Chart(ctx,{
+    type:"line",
+    data:{
+        labels:physicsData.map((_,i)=>"Test "+(i+1)),
+        datasets:[
+            {label:"Physics",data:physicsData,borderColor:"red",fill:false},
+            {label:"Chemistry",data:chemistryData,borderColor:"green",fill:false},
+            {label:"Maths",data:mathsData,borderColor:"blue",fill:false}
+        ]
+    }
+});
+
+function updateChart(){
+    myChart.data.labels=physicsData.map((_,i)=>"Test "+(i+1));
+    myChart.data.datasets[0].data=physicsData;
+    myChart.data.datasets[1].data=chemistryData;
+    myChart.data.datasets[2].data=mathsData;
+    myChart.update();
+}
+
+updateChart();
+
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Arav JEE Ultimate Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+}
+.box{
+    background:#1e293b;
+    margin:20px auto;
+    padding:20px;
+    border-radius:15px;
+    width:90%;
+    max-width:420px;
+}
+input,button{
+    padding:8px;
+    margin:5px;
+    border-radius:8px;
+    border:none;
+}
+button{
+    background:cyan;
+    font-weight:bold;
+    cursor:pointer;
+}
+h2{color:cyan;}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 Arav JEE Weapon 🔥</h1>
+
+<!-- Countdown -->
+<div class="box">
+<h2>JEE Countdown</h2>
+<input type="date" id="examDate">
+<br>
+<button onclick="setCountdown()">Set Date</button>
+<p id="countdown"></p>
+</div>
+
+<!-- Practice Timer -->
+<div class="box">
+<h2>Question Practice Timer</h2>
+<p id="timer">00:00</p>
+<button onclick="startTimer()">Start</button>
+<button onclick="stopTimer()">Stop</button>
+<button onclick="resetTimer()">Reset</button>
+</div>
+
+<!-- Marks Tracker -->
+<div class="box">
+<h2>Marks Tracker</h2>
+<input type="number" id="physics" placeholder="Physics">
+<input type="number" id="chemistry" placeholder="Chemistry">
+<input type="number" id="maths" placeholder="Maths">
+<br>
+<button onclick="calculate()">Save Marks</button>
+<p id="total"></p>
+</div>
+
+<!-- Study Streak -->
+<div class="box">
+<h2>Study Streak 🔥</h2>
+<p id="streak"></p>
+<button onclick="increaseStreak()">Mark Today Studied</button>
+</div>
+
+<script>
+
+// ================= COUNTDOWN =================
+function setCountdown(){
+    let date = document.getElementById("examDate").value;
+    localStorage.setItem("examDate", date);
+}
+
+setInterval(function(){
+    let examDate = localStorage.getItem("examDate");
+    if(!examDate) return;
+    let end = new Date(examDate).getTime();
+    let now = new Date().getTime();
+    let diff = end - now;
+    let days = Math.floor(diff/(1000*60*60*24));
+    document.getElementById("countdown").innerHTML = days + " Days Left 🔥";
+},1000);
+
+
+// ================= TIMER =================
+let seconds=0;
+let clearInterval
+
+function startTimer(){
+    interval = setInterval(function(){
+        seconds++;
+        let min = Math.floor(seconds/60);
+        let sec = seconds%60;
+        document.getElementById("timer").innerHTML =
+        (min<10?"0":"")+min + ":" + (sec<10?"0":"")+sec;
+    },1000);
+}
+
+function stopTimer(){
+    clearInterval(interval);
+}
+
+function resetTimer(){
+    clearInterval(interval);
+    seconds=0;
+    document.getElementById("timer").innerHTML="00:00";
+}
+
+
+// ================= MARKS =================
+function calculate(){
+    let p=Number(document.getElementById("physics").value);
+    let c=Number(document.getElementById("chemistry").value);
+    let m=Number(document.getElementById("maths").value);
+    let total=p+c+m;
+    localStorage.setItem("totalMarks", total);
+    document.getElementById("total").innerHTML="Total: "+total;
+}
+
+document.getElementById("total").innerHTML =
+"Total: "+(localStorage.getItem("totalMarks")||0);
+
+
+// ================= STREAK =================
+let streak = localStorage.getItem("streak")||0;
+document.getElementById("streak").innerHTML="Current Streak: "+streak+" Days";
+
+function increaseStreak(){
+    streak++;
+    localStorage.setItem("streak", streak);
+    document.getElementById("streak").innerHTML="Current Streak: "+streak+" Days";
+}
+
+</script>
+
+</body>
+</html>
